@@ -1,0 +1,20 @@
+# Does multithreading make zstd -9 faster, and does it cost ratio or memory?
+id = "C3-zstd-threads"
+question = "How does zstd -9 scale with worker threads, and what does it cost?"
+hypothesis = "Wall time falls with threads up to the core count, CPU time rises slightly, ratio is unchanged within 1%, and peak memory grows with threads."
+kind = "screening"
+adapter = "compression"
+primary = "compress_s"
+control = "zstd-9-t1"
+blocks = 6
+delta = 0.05
+pareto = [["compress_mbps", "compress_rss_mib"]]
+
+[factors]
+corpus = ["text-64m", "logs-64m"]
+
+[[grid]]
+name = "zstd-9-t{threads}"
+codec = "zstd"
+level = 9
+threads = [1, 2, 4, 8]

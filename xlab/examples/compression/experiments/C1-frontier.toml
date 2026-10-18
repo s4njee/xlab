@@ -1,0 +1,50 @@
+# The speed / ratio frontier of common codecs and levels, on four kinds of data.
+# Characterization: every arm's geometric means and the Pareto front of compression
+# speed against ratio (and decompression speed against ratio) are the result; ratios
+# to zstd-3 are reported too, as a reference point rather than a test.
+id = "C1-frontier"
+question = "For each kind of data, which codec settings give the best ratio for a given speed?"
+hypothesis = "zstd dominates the middle of the frontier; lz4 owns the fast end and xz/brotli the high-ratio end, and incompressible data makes every level above the fastest a waste."
+kind = "characterization"
+adapter = "compression"
+primary = "compress_s"
+control = "zstd-3"
+blocks = 4
+min_blocks = 4
+pareto = [["compress_mbps", "ratio"], ["decompress_mbps", "ratio"]]
+
+[options]
+decompress = true
+cache = "warm"
+
+[factors]
+corpus = ["text-16m", "logs-16m", "json-16m", "mixed-16m"]
+
+[[grid]]
+name = "zstd-{level}"
+codec = "zstd"
+level = [1, 3, 6, 9, 15, 19]
+
+[[grid]]
+name = "lz4-{level}"
+codec = "lz4"
+level = [1, 9]
+
+[[grid]]
+name = "gzip-{level}"
+codec = "gzip"
+level = [1, 6, 9]
+
+[[grid]]
+name = "xz-{level}"
+codec = "xz"
+level = [1, 6]
+
+[[grid]]
+name = "brotli-{level}"
+codec = "brotli"
+level = [1, 5, 9]
+
+[arms.bzip2-9]
+codec = "bzip2"
+level = 9

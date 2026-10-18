@@ -1,0 +1,27 @@
+# Sentinel: a short, fixed measurement repeated on a schedule, never changed.
+#   xlab standing add experiments/S0-sentinel.toml --every-hours 6
+# zstd-3 and zstd-3-twin are the same command: their ratio shows how far two identical
+# arms stray from 1 at that hour (the noise floor). The control's time across runs shows
+# drift: a slower disk, a thermal problem, a changed library. gzip-6 against zstd-3
+# should not move; if it does, something has changed on the host.
+id = "S0-sentinel"
+question = "Is this host measuring the same way it did yesterday?"
+kind = "screening"
+adapter = "compression"
+primary = "compress_s"
+control = "zstd-3"
+blocks = 4
+min_blocks = 4
+
+[factors]
+corpus = ["text-16m"]
+
+[arms.zstd-3]
+codec = "zstd"
+level = 3
+[arms.zstd-3-twin]
+codec = "zstd"
+level = 3
+[arms.gzip-6]
+codec = "gzip"
+level = 6

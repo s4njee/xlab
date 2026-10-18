@@ -1,0 +1,31 @@
+# An experiment that does not run on the computer. Each block is one baking day;
+# the lab randomizes which loaf goes in first, and you record each result on the
+# dashboard's Tasks view, with `xlab record`, or from a CSV (`xlab tasks --csv`).
+id = "M1-sourdough"
+question = "Does bread flour give a better rise than all-purpose flour, at short and long proofs?"
+kind = "screening"
+adapter = "manual"
+primary = "rise_pct"
+control = "bread-flour"
+blocks = 6
+delta = 0.05
+instructions = "Mix 500 g {arm.flour}, 350 g water, 100 g starter, 10 g salt. Proof {cell.proof_h} h at room temperature, bake 45 min at 230 C, then measure."
+
+[factors]
+proof_h = [4, 12]
+
+[metrics.rise_pct]
+label = "Rise"
+unit = "%"
+better = "higher"
+description = "Loaf height after baking over dough height after shaping, minus 100%"
+[metrics.crumb_score]
+label = "Crumb"
+unit = "1-10"
+better = "higher"
+
+[arms.bread-flour]
+flour = "bread flour"
+[arms.all-purpose]
+flour = "all-purpose flour"
+instructions = "All-purpose flour absorbs less water: hold back 15 g."

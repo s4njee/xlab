@@ -1,0 +1,52 @@
+# Pre-registered plan: should log and JSON archives move off gzip -6?
+#  1. Screen candidates against gzip -6 (C2).
+#  2. If any is faster AND compresses (nearly) as well, confirm exactly those with
+#     fresh blocks and twice the replication, then see whether threads help (C3).
+#  3. If something is only faster (it costs ratio), record that and stop: that is a
+#     trade-off for a person to make, not a default.
+id = "T1-log-archives"
+question = "Should log and JSON archives switch from gzip -6, and to what?"
+start = ["screen"]
+
+[nodes.screen]
+spec = "../experiments/C2-replace-gzip.toml"
+question = "Which candidates beat gzip -6 on time without losing more than 3% of ratio?"
+
+  [[nodes.screen.branch]]
+  # an arm qualifies if, on both the logs and the JSON corpus, it is faster than gzip -6
+  # and its compression ratio is no more than 3% worse
+  when = [ { verdict = "better", factors = { corpus = ["logs-*", "json-*"] }, all = true },
+           { metric = "ratio", ratio_at_least = 0.97, factors = { corpus = ["logs-*", "json-*"] }, all = true } ]
+  next = ["confirm", "threads"]
+  label = "faster, ratio within 3%"
+
+  [[nodes.screen.branch]]
+  when = { verdict = "better" }
+  next = []
+  hold = true
+  label = "faster only by giving up ratio"
+
+  [[nodes.screen.branch]]
+  otherwise = true
+  next = []
+  label = "nothing beat gzip -6"
+
+[nodes.confirm]
+promote = "screen"
+id = "C2c-replace-gzip-confirm"
+blocks = 12
+question = "Do the selected settings stay faster than gzip -6 with fresh blocks?"
+
+  [[nodes.confirm.branch]]
+  when = { verdict = "better", all = true }
+  next = []
+  label = "confirmed faster on every corpus"
+
+  [[nodes.confirm.branch]]
+  otherwise = true
+  next = []
+  label = "not confirmed everywhere"
+
+[nodes.threads]
+spec = "../experiments/C3-zstd-threads.toml"
+question = "Would threads make the slower, smaller zstd levels practical?"

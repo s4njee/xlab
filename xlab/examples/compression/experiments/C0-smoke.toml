@@ -1,0 +1,23 @@
+# Harness check for the compression adapter: small inputs, two blocks. Not a measurement.
+id = "C0-smoke"
+question = "Does the compression harness record valid, verified samples?"
+kind = "screening"
+adapter = "compression"
+primary = "compress_s"
+control = "gzip-6"
+blocks = 2
+min_blocks = 2
+pareto = [["compress_mbps", "ratio"]]
+
+[factors]
+corpus = ["text-4m", "random-4m"]
+
+[arms.gzip-6]
+codec = "gzip"
+level = 6
+[arms.zstd-3]
+codec = "zstd"
+level = 3
+[arms.lz4-1]
+codec = "lz4"
+level = 1

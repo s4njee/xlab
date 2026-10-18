@@ -1,0 +1,35 @@
+# A synthetic experiment with known answers: "faster" really is 12% faster, "same" is not
+# different, "slow" is 8% slower. Use it to see the lab work in a few seconds, and to check
+# that the statistics find what is there and nothing that is not.
+id = "S1-demo"
+question = "Do the two candidate settings beat the baseline?"
+hypothesis = "faster takes about 12% less time than base; same is indistinguishable"
+kind = "screening"
+adapter = "simulated"
+primary = "time_s"
+control = "base"
+blocks = 8
+delta = 0.03
+pareto = [["throughput", "quality"]]
+
+[options]
+sd = 0.04
+drift = 0.002
+void_rate = 0.03
+sleep_s = 0.05
+
+[factors]
+scale = [1, 4]
+
+[arms.base]
+mean = 1.0
+quality = 50
+[arms.faster]
+effect = 0.88
+quality = 42
+[arms.same]
+effect = 1.0
+quality = 55
+[arms.slow]
+effect = 1.08
+quality = 58

@@ -1,0 +1,23 @@
+# The command adapter times any shell command. Three ways to count the lines of a
+# 200 MB log; `setup` builds the input once, untimed, and `after` checks every answer.
+# Commands are templates: {cell.X}, {arm.X}, {scratch}, {lab}; write a literal brace as {{ or }}.
+id = "K1-line-count"
+question = "Which standard tool counts lines fastest?"
+kind = "screening"
+adapter = "command"
+primary = "wall_s"
+control = "wc"
+blocks = 8
+
+[options]
+setup = "test -s {lab}/data/lines.txt || python3 -c \"import random; r=random.Random(1); open('{lab}/data/lines.txt','w').writelines(f'{{r.random():.12f}} {{r.getrandbits(64):x}} line\\n' for _ in range(5_000_000))\""
+after = "test \"$(tr -d ' ' < {scratch}/stdout)\" = 5000000"
+fingerprint = ["uname -sr", "awk --version 2>&1 | head -1"]
+env = { LC_ALL = "C" }
+
+[arms.wc]
+command = "wc -l < {lab}/data/lines.txt"
+[arms.grep]
+command = "grep -c '' {lab}/data/lines.txt"
+[arms.awk]
+command = "awk 'END {{ print NR }}' {lab}/data/lines.txt"   # literal braces are doubled

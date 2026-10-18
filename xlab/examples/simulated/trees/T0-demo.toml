@@ -1,0 +1,35 @@
+# Screen three settings, confirm whichever beat the baseline with more blocks, and
+# otherwise stop. Runs in under a minute with the simulated adapter.
+id = "T0-demo"
+question = "Is there a setting worth making the default?"
+start = ["screen"]
+
+[nodes.screen]
+spec = "../experiments/S1-demo.toml"
+question = "Which settings beat the baseline in a short screen?"
+
+  [[nodes.screen.branch]]
+  when = { verdict = "better", all = false }
+  next = ["confirm"]
+  label = "something beat base"
+
+  [[nodes.screen.branch]]
+  otherwise = true
+  next = []
+  label = "nothing beat base"
+
+[nodes.confirm]
+promote = "screen"
+id = "S1c-demo-confirm"
+blocks = 12
+question = "Does the winner hold up with fresh blocks?"
+
+  [[nodes.confirm.branch]]
+  when = { verdict = "better", all = true }
+  next = []
+  label = "confirmed on every cell"
+
+  [[nodes.confirm.branch]]
+  otherwise = true
+  next = []
+  label = "not confirmed everywhere"

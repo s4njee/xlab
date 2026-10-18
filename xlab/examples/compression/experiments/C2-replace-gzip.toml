@@ -1,0 +1,31 @@
+# Screening: can a faster codec replace gzip -6 for log and JSON archives without
+# giving up compression ratio? gzip -6 is the incumbent and the control.
+id = "C2-replace-gzip"
+question = "Which settings compress faster than gzip -6, and which of those also compress at least as well?"
+hypothesis = "zstd -1..-6 are faster than gzip -6 with an equal or better ratio; lz4 is faster still but compresses less."
+kind = "screening"
+adapter = "compression"
+primary = "compress_s"
+control = "gzip-6"
+blocks = 6
+delta = 0.05
+pareto = [["compress_mbps", "ratio"]]
+
+[factors]
+corpus = ["logs-32m", "json-32m", "text-32m"]
+
+[arms.gzip-6]
+codec = "gzip"
+level = 6
+
+[[grid]]
+name = "zstd-{level}"
+codec = "zstd"
+level = [1, 3, 6]
+
+[arms.lz4-1]
+codec = "lz4"
+level = 1
+[arms.brotli-4]
+codec = "brotli"
+level = 4

@@ -1,0 +1,31 @@
+# xlab settings. Every key is optional; these are the defaults unless noted.
+
+[lab]
+name = "NAME"
+# adapters = ["mypackage.myadapter"]     # extra adapter modules; LAB/adapters/*.py load too
+
+[runner]
+poll_s = 5                 # how often an idle runner looks at the queue
+halt_after_failures = 3    # failed runs in a row before the runner pauses itself...
+halt_minutes = 60          # ...for this long
+
+[gates]                    # checked before every automatic sample; the runner waits until they pass
+max_load_per_core = 0.6    # 1-minute load average per core (default: off)
+settle_timeout_s = 120     # after this long waiting, an event says the host is busy
+max_wait_h = 12            # after this long, the run fails
+# max_temp_c = 70          # Linux thermal zones
+min_free_gib = 1.0         # below this on the scratch disk the run fails
+
+[reports]
+every_hours = 6            # a local report in reports/ (Markdown, HTML, JSON)
+
+[ai]
+provider = "none"          # anthropic | openai | openrouter | none
+# model = "claude-opus-5-5"   # the default for anthropic; required for openai and openrouter
+every_hours = 6
+# effort = "medium"           # anthropic only
+# key_file = "~/.config/xlab/keys.json"   # or ANTHROPIC_API_KEY / OPENAI_API_KEY / OPENROUTER_API_KEY
+
+[dashboard]
+host = "127.0.0.1"
+port = 8710
